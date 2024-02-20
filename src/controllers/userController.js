@@ -77,7 +77,7 @@ const userController = {
         res.status(access.code);
         res.json({ error: access.error })
       } else {
-        res.json(access);
+        res.json({ accessToken: access.token });
       }
     } catch (err) {
       res.status(500);

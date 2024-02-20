@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 import { db } from "../../db.js";
 import BaseModel from "./BaseModel.js";
@@ -118,7 +119,7 @@ class User extends BaseModel {
 
   static authenticate({ username, password }) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT username, password FROM systemUsers WHERE username = ?';
+      const query = 'SELECT * FROM systemUsers WHERE username = ?';
 
       db.get(query, [username], (err, user) => {
         if (err) {
@@ -126,9 +127,13 @@ class User extends BaseModel {
         } else {
           if (user && user.username && user.password) {
             if (bcrypt.compareSync(password, user.password)) {
-              const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+              const token = jwt.sign({
+                userId: user.id,
+                username: user.username,
+                role: user.role
+              }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-              resolve(token);
+              resolve({ token });
             } else {
               resolve({ error: "Un-authorized", code: 401 });
             }
