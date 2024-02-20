@@ -1,4 +1,5 @@
-import User from "./User";
+import { db } from "../../db.js";
+import User from "./User.js";
 
 class Customer extends User {
   constructor(address, phone) {
@@ -62,7 +63,7 @@ class Customer extends User {
       let query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN users as u ON c.user_id = u.id';
       let values = [];
       if (searchTerm) {
-        query += ' WHERE name like ? OR address like ?';
+        query += ' WHERE name LIKE ? OR address LIKE ?';
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`]);
       }
       query += ' LIMIT ? OFFSET ?';

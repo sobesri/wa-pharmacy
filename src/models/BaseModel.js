@@ -1,6 +1,3 @@
-import db from ".";
-import BaseModel from "./BaseModel";
-
 class BaseModel {
   static insert(obj) {
     throw new Error('Method insert() must be implemented by derived class');

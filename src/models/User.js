@@ -1,5 +1,5 @@
-import db from ".";
-import BaseModel from "./BaseModel";
+import { db } from "../../db.js";
+import BaseModel from "./BaseModel.js";
 
 class User extends BaseModel {
   constructor(name, username, password, role) {
@@ -47,7 +47,7 @@ class User extends BaseModel {
     return new Promise((resolve, reject) => {
       const query =
         'UPDATE users SET role=? WHERE id=?';
-      const values = [role, id];
+      const values = [role.toLower(), id];
 
       db.run(query, values, function (err) {
         if (err) {
@@ -81,18 +81,22 @@ class User extends BaseModel {
       let query = 'SELECT * FROM users';
       let values = [];
       if (searchTerm) {
-        query += ' WHERE name like ? OR username like ? OR role like ?';
+        query += ' WHERE name LIKE ? OR username LIKE ? OR role LIKE ?';
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`]);
       }
-      query += ' LIMIT ? OFFSET ?';
+      query += ' LIMIT ?,?';
       values.push(...[limit, offset]);
 
-      db.all(query, values, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
+      db.serialize(() => {
+        db.all(query, values, (err, runResult) => {
+          if (err) {
+            console.log("error", error);
+            reject(err);
+          } else {
+            console.log("results", runResult, query);
+            resolve(runResult);
+          }
+        });
       });
     });
   }

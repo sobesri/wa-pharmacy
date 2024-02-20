@@ -1,5 +1,5 @@
-import db from ".";
-import BaseModel from "./BaseModel";
+import { db } from "../../db.js";
+import BaseModel from "./BaseModel.js";
 
 class Medicine extends BaseModel {
   constructor(name, description, quantity) {
@@ -63,7 +63,7 @@ class Medicine extends BaseModel {
       let query = 'SELECT * FROM medicines';
       let values = [];
       if (searchTerm) {
-        query += ' WHERE name like ? OR description like ?';
+        query += ' WHERE name LIKE ? OR description LIKE ?';
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`]);
       }
       query += ' LIMIT ? OFFSET ?';
