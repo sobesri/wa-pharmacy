@@ -25,7 +25,7 @@ const createUsersTable = `
     username TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     role TEXT NOT NULL,
-    deleted INTEGER DEFAULT 0,
+    deleted INTEGER DEFAULT 0
   );
 `;
 
