@@ -6,7 +6,7 @@ import { serve, setup } from "swagger-ui-express";
 dotenv.config();
 
 import spec from "./swagger.json" assert { type: "json" };
-import userRoutes from "./src/routes/index.js";
+import { userRouter, customerRouter, medicineRouter } from "./src/routes/index.js";
 import './src/models/index.js'
 
 const app = express();
@@ -23,7 +23,9 @@ app.get('/', (req, res) => {
   res.send(`Server is running on http://localhost:${PORT}`);
 });
 
-app.use('/api/users', userRoutes);
+app.use('/api/users', userRouter);
+app.use('/api/customers', customerRouter);
+app.use('/api/medicines', medicineRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

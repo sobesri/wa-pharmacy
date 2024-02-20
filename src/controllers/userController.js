@@ -13,7 +13,12 @@ const userController = {
   getUserById: async (req, res) => {
     try {
       const user = await User.getById(req.params.id);
-      res.json(user);
+      if (user) {
+        res.json(user);
+      } else {
+        res.status(404);
+        res.json({ error: 'User not found' })
+      }
     } catch (err) {
       res.status(500);
       res.json({ error: err })
@@ -50,6 +55,30 @@ const userController = {
     try {
       await User.delete(req.params.id, false);
       res.status(204).end();
+    } catch (err) {
+      res.status(500);
+      res.json({ error: err })
+    }
+  },
+  updateUserRole: async (req, res) => {
+    try {
+      const updatedUser = await User.updateRole(req.params.id, req.body.role);
+      res.json(updatedUser);
+    } catch (err) {
+      res.status(500);
+      res.json({ error: err })
+    }
+  },
+  logIn: async (req, res) => {
+    try {
+      const access = await User.authenticate(req.query);
+
+      if (access.error) {
+        res.status(access.code);
+        res.json({ error: access.error })
+      } else {
+        res.json(access);
+      }
     } catch (err) {
       res.status(500);
       res.json({ error: err })

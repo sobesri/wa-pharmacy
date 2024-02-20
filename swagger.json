@@ -55,23 +55,24 @@
         }
       },
       "post": {
-        "summary": "Create a new customer",
-        "operationId": "createCustomer",
+        "summary": "Create a new user",
+        "operationId": "createUser",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "example": {
                 "name": "Jane Doe",
-                "address": "456 Oak St",
-                "phone": "555-5678"
+                "username": "janeDoe",
+                "password": "abc123",
+                "role": "owner"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Customer created successfully",
+            "description": "User created successfully",
             "content": {
               "application/json": {
                 "example": {
@@ -86,16 +87,16 @@
         }
       }
     },
-    "/api/customers/{id}": {
+    "/api/users/{id}": {
       "get": {
-        "summary": "Get a specific customer by ID",
-        "operationId": "getCustomerById",
+        "summary": "Get a specific user by ID",
+        "operationId": "getUserById",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "ID of the customer",
+            "description": "ID of the user",
             "schema": {
               "type": "integer"
             }
@@ -118,14 +119,14 @@
         }
       },
       "put": {
-        "summary": "Update a specific customer by ID",
-        "operationId": "updateCustomer",
+        "summary": "Update a specific user by ID",
+        "operationId": "updateUser",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "ID of the customer",
+            "description": "ID of the user",
             "schema": {
               "type": "integer"
             }
@@ -136,38 +137,68 @@
           "content": {
             "application/json": {
               "example": {
-                "name": "Updated Name",
-                "address": "Updated Address",
-                "phone": "555-9876"
+                "name": "Updated Doe"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Customer updated successfully",
+            "description": "User updated successfully",
             "content": {
               "application/json": {
                 "example": {
                   "id": 1,
-                  "name": "Updated Name",
-                  "address": "Updated Address",
-                  "phone": "555-9876"
+                  "name": "Updated Doe"
                 }
               }
             }
           }
         }
-      },
-      "delete": {
-        "summary": "Delete a specific customer by ID",
-        "operationId": "deleteCustomer",
+      }
+    },
+    "/api/users/{id}/archive": {
+      "put": {
+        "summary": "Soft delete a specific user by ID",
+        "operationId": "getUserById",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "ID of the customer",
+            "description": "ID of the user",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response",
+            "content": {
+              "application/json": {
+                "example": {
+                  "id": 1,
+                  "name": "John Doe",
+                  "address": "123 Main St",
+                  "phone": "555-1234"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/users/{id}/delete": {
+      "delete": {
+        "summary": "Delete a specific user by ID",
+        "operationId": "deleteUser",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID of the user",
             "schema": {
               "type": "integer"
             }
@@ -175,7 +206,7 @@
         ],
         "responses": {
           "204": {
-            "description": "Customer deleted successfully"
+            "description": "User deleted successfully"
           }
         }
       }

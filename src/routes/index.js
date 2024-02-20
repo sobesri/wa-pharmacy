@@ -1,13 +1,9 @@
-import express from "express";
-import userController from "../controllers/userController.js";
-const router = express.Router();
+import userRouter from "./userRoutes.js";
+import customerRouter from "./customerRoutes.js";
+import medicineRouter from "./medicineRoutes.js";
 
-
-// Define routes and associate them with controller methods
-router.get('/', userController.getAllUsers);
-router.get('/:id', userController.getUserById);
-// router.post('/customers', customerController.createCustomer);
-// router.put('/customers/:id', customerController.updateCustomer);
-// router.delete('/customers/:id', customerController.deleteCustomer);
-
-export default router;
+export {
+  userRouter,
+  customerRouter,
+  medicineRouter
+};

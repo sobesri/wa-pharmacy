@@ -1,5 +1,3 @@
-import bcrypt from 'bcrypt';
-
 const medicinesData = [
   {
     name: 'Test Med1',

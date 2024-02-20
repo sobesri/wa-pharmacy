@@ -1,3 +1,5 @@
+import bcrypt from 'bcrypt';
+
 import { db } from "../../db.js";
 import BaseModel from "./BaseModel.js";
 
@@ -11,10 +13,11 @@ class User extends BaseModel {
   }
 
   static insert({ name, username, password, role }) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       const query =
         'INSERT INTO systemUsers (name, username, password, role) VALUES (?, ?, ?, ?)';
-      const values = [name, username, password, role];
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const values = [name, username, hashedPassword, role];
 
       db.run(query, values, function (err) {
         if (err) {
@@ -109,6 +112,30 @@ class User extends BaseModel {
         } else {
           resolve(row);
         }
+      });
+    });
+  }
+
+  static authenticate({ username, password }) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT username, password FROM systemUsers WHERE username = ?';
+
+      db.get(query, [username], (err, user) => {
+        if (err) {
+          reject(err);
+        } else {
+          if (user && user.username && user.password) {
+            if (bcrypt.compareSync(password, user.password)) {
+              const token = jwt.sign({ userId: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+              resolve(token);
+            } else {
+              resolve({ error: "Un-authorized", code: 401 });
+            }
+            resolve({ error: "User not found", code: 404 });
+          }
+        }
+        reject("Internal server error");
       });
     });
   }

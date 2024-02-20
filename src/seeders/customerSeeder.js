@@ -1,5 +1,3 @@
-import bcrypt from 'bcrypt';
-
 const customersData = [
   {
     address: 'Test Customer Address',
