@@ -13,7 +13,7 @@ class User extends BaseModel {
   static insert({ name, username, password, role }) {
     return new Promise((resolve, reject) => {
       const query =
-        'INSERT INTO users (name, username, password, role) VALUES (?, ?, ?, ?)';
+        'INSERT INTO systemUsers (name, username, password, role) VALUES (?, ?, ?, ?)';
       const values = [name, username, password, role];
 
       db.run(query, values, function (err) {
@@ -29,7 +29,7 @@ class User extends BaseModel {
   static update(id, { name }) {
     return new Promise((resolve, reject) => {
       const query =
-        'UPDATE users SET name=? WHERE id=?';
+        'UPDATE systemUsers SET name=? WHERE id=?';
       const values = [name, id];
 
       db.run(query, values, function (err) {
@@ -46,7 +46,7 @@ class User extends BaseModel {
   static updateRole(id, role) {
     return new Promise((resolve, reject) => {
       const query =
-        'UPDATE users SET role=? WHERE id=?';
+        'UPDATE systemUsers SET role=? WHERE id=?';
       const values = [role.toLower(), id];
 
       db.run(query, values, function (err) {
@@ -61,9 +61,9 @@ class User extends BaseModel {
 
   static delete(id, softDelete = true) {
     return new Promise((resolve, reject) => {
-      let query = 'UPDATE users SET deleted = 1 WHERE id = ?';
+      let query = 'UPDATE systemUsers SET deleted = 1 WHERE id = ?';
       if (!softDelete) {
-        query = 'DELETE FROM users WHERE id = ?';
+        query = 'DELETE FROM systemUsers WHERE id = ?';
       }
 
       db.run(query, [id], function (err) {
@@ -78,22 +78,20 @@ class User extends BaseModel {
 
   static getAll({ searchTerm = null, limit = 25, offset = 0 }) {
     return new Promise((resolve, reject) => {
-      let query = 'SELECT * FROM users';
+      let query = 'SELECT * FROM systemUsers';
       let values = [];
       if (searchTerm) {
         query += ' WHERE name LIKE ? OR username LIKE ? OR role LIKE ?';
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`]);
       }
-      query += ' LIMIT ?,?';
+      query += ' LIMIT ? OFFSET ?';
       values.push(...[limit, offset]);
 
       db.serialize(() => {
         db.all(query, values, (err, runResult) => {
           if (err) {
-            console.log("error", error);
             reject(err);
           } else {
-            console.log("results", runResult, query);
             resolve(runResult);
           }
         });
@@ -103,7 +101,7 @@ class User extends BaseModel {
 
   static getById(id) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM users WHERE id = ?';
+      const query = 'SELECT * FROM systemUsers WHERE id = ?';
 
       db.get(query, [id], (err, row) => {
         if (err) {

@@ -6,7 +6,6 @@ const userController = {
       const users = await User.getAll(req.query || {});
       res.json(users);
     } catch (err) {
-      console.log('error', err);
       res.status(500);
       res.json({ error: err })
     }

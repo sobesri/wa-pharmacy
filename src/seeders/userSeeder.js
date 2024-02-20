@@ -42,7 +42,7 @@ async function seedUsers(db) {
       };
     }));
 
-    let query = 'INSERT INTO users (name, username, password, role) VALUES';
+    let query = 'INSERT INTO systemUsers (name, username, password, role) VALUES';
     let values = []
     seededUsers.forEach(({ name, username, password, role }) => {
       values.push(`('${name}', '${username}', '${password}', '${role}')`);
@@ -50,22 +50,12 @@ async function seedUsers(db) {
     query += values.join(',');
 
     db.serialize(() => {
-      db.exec(query, () => {
-        console.log('Users seeded successfully');
-        const query = 'SELECT * FROM users';
-
-        db.all(query, (err, row) => {
-          if (err) {
-            console.log('error', err);
-          } else {
-            // console.log('success', row);
-          }
-        });
-      });
+      db.exec(query);
+      console.log('Users seeded successfully');
     });
   } catch (error) {
-    throw error;
-    // console.error('Error seeding users:', error);
+    // throw error;
+    console.error('Error seeding users:', error);
   }
 }
 

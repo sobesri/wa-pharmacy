@@ -60,7 +60,7 @@ class Customer extends User {
     return new Promise((resolve, reject) => {
       // Join Users table with Customers table when searching for customer information.
       // TODO: check query
-      let query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN users as u ON c.user_id = u.id';
+      let query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN systemUsers as u ON c.user_id = u.id';
       let values = [];
       if (searchTerm) {
         query += ' WHERE name LIKE ? OR address LIKE ?';
@@ -69,19 +69,21 @@ class Customer extends User {
       query += ' LIMIT ? OFFSET ?';
       values.push(...[limit, offset]);
 
-      db.all(query, values, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
+      db.serialize(() => {
+        db.all(query, values, (err, runResult) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(runResult);
+          }
+        });
       });
     });
   }
 
   static getById(id) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN users as u ON c.user_id = u.id WHERE id = ?';
+      const query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN systemUsers as u ON c.user_id = u.id WHERE id = ?';
 
       db.get(query, [id], (err, row) => {
         if (err) {

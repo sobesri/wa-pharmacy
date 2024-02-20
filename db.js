@@ -1,7 +1,6 @@
 import sqlite3 from 'sqlite3';
 import { open } from 'sqlite'
 
-console.log('hit1');
 // Create an SQLite database in-memory (for testing purposes)
 const DB_PATH = process.env.DB_PATH || ':memory:';
 

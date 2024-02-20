@@ -1,7 +1,7 @@
-import seedUsers from '../seeders/userSeeder.js';
 import { db } from '../../db.js';
-
-console.log('hit2');
+import seedUsers from '../seeders/userSeeder.js';
+import seedMedicines from '../seeders/medicineSeeder.js';
+import seedCustomers from '../seeders/customerSeeder.js';
 
 function createTables() {
   db.serialize(() => {
@@ -13,7 +13,7 @@ function createTables() {
         quantity INTEGER,
         deleted INTEGER DEFAULT 0
       );
-      CREATE TABLE IF NOT EXISTS users (
+      CREATE TABLE IF NOT EXISTS systemUsers (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         username TEXT UNIQUE NOT NULL,
@@ -27,14 +27,16 @@ function createTables() {
         phone TEXT,
         deleted INTEGER DEFAULT 0,
         user_id INTEGER,
-        FOREIGN KEY (user_id) REFERENCES users (id)
+        FOREIGN KEY (user_id) REFERENCES systemUsers (id)
       );
     `, () => {
       db.serialize(() => {
         // db.run('DELETE FROM medicines;');
         // db.run('DELETE FROM customers;');
-        // db.run('DELETE FROM users;');
+        // db.run('DELETE FROM systemUsers;');
         seedUsers(db);
+        seedCustomers(db);
+        seedMedicines(db);
       });
     });
   }, () => db.close());

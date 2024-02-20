@@ -69,12 +69,14 @@ class Medicine extends BaseModel {
       query += ' LIMIT ? OFFSET ?';
       values.push(...[limit, offset]);
 
-      db.all(query, values, (err, rows) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(rows);
-        }
+      db.serialize(() => {
+        db.all(query, values, (err, runResult) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(runResult);
+          }
+        });
       });
     });
   }

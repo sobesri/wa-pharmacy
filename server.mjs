@@ -23,7 +23,6 @@ app.get('/', (req, res) => {
   res.send(`Server is running on http://localhost:${PORT}`);
 });
 
-console.log('hit3');
 app.use('/api/users', userRoutes);
 
 app.listen(PORT, () => {
