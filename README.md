@@ -22,5 +22,5 @@ The following message should be displayed "Server is running on http://localhost
 You can change the port where the server is running by editing the .env file.
 
 System specifications:
-Node: v16.16.0
-Npm: 8.11.0
+Node: v20.11.1 (lts)
+Npm: 10.2.4
