@@ -17,7 +17,16 @@ class User extends BaseModel {
     return new Promise(async (resolve, reject) => {
       const query =
         'INSERT INTO systemUsers (name, username, password, role) VALUES (?, ?, ?, ?)';
+
+      if (!password) {
+        reject("Password has not been sent");
+      }
       const hashedPassword = await bcrypt.hash(password, 10);
+
+      if (!hashedPassword) {
+        reject("Hashed password could not be generated");
+      }
+
       const values = [name, username, hashedPassword, role];
 
       db.run(query, values, function (err) {
@@ -51,7 +60,7 @@ class User extends BaseModel {
     return new Promise((resolve, reject) => {
       const query =
         'UPDATE systemUsers SET role=? WHERE id=?';
-      const values = [role.toLower(), id];
+      const values = [role.toLowerCase(), id];
 
       db.run(query, values, function (err) {
         if (err) {
@@ -89,7 +98,7 @@ class User extends BaseModel {
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`]);
       }
       query += ' LIMIT ? OFFSET ?';
-      values.push(...[limit, offset]);
+      values.push(...[limit, offset * limit]);
 
       db.serialize(() => {
         db.all(query, values, (err, runResult) => {

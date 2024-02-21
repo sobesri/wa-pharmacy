@@ -1,11 +1,9 @@
 import express from "express";
 import dotenv from 'dotenv';
 import bodyParser from "body-parser";
-import { serve, setup } from "swagger-ui-express";
 
 dotenv.config();
 
-import spec from "./swagger.json" assert { type: "json" };
 import { userRouter, customerRouter, medicineRouter } from "./src/routes/index.js";
 import './src/models/index.js'
 
@@ -17,7 +15,6 @@ const options = {
 };
 
 app.use(bodyParser.json());
-app.use('/swagger', serve, setup(spec, options));
 
 app.get('/', (req, res) => {
   res.send(`Server is running on http://localhost:${PORT}`);

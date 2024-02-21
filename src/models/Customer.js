@@ -7,19 +7,45 @@ class Customer extends User {
     this.phone = phone;
   }
 
-  static insert({ address, phone }) {
+  static insert({ address, phone, userId }) {
     return new Promise((resolve, reject) => {
       const query =
-        'INSERT INTO customers (address, phone) VALUES (?, ?)';
-      const values = [address, phone];
+        'INSERT INTO customers (address, phone, user_id) VALUES (?, ?, ?)';
+      const values = [address, phone, userId];
 
-      db.run(query, values, function (err) {
+      const getExistingUserQuery = 'SELECT * FROM systemUsers WHERE id = ?';
+      const getExistingCustomerQuery = 'SELECT * FROM customers WHERE user_id = ?';
+
+      db.get(getExistingUserQuery, [userId], function (err, row) {
         if (err) {
+          console.log("err", err);
           reject(err);
         } else {
-          resolve({ id: this.lastID });
+          if (!row) {
+            reject("User not found");
+          } else {
+            db.get(getExistingCustomerQuery, [userId], function (err, row) {
+              if (err) {
+                console.log("err", err);
+                reject(err);
+              } else {
+                if (row) {
+                  reject("User id is already assigned to another customer");
+                } else {
+                  db.run(query, values, function (err) {
+                    if (err) {
+                      reject(err);
+                    } else {
+                      resolve({ id: this.lastID });
+                    }
+                  });
+                }
+              }
+            });
+          }
         }
       });
+
     });
   }
 
@@ -59,7 +85,6 @@ class Customer extends User {
   static getAll({ searchTerm = null, limit = 10, offset = 0 }) {
     return new Promise((resolve, reject) => {
       // Join Users table with Customers table when searching for customer information.
-      // TODO: check query
       let query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN systemUsers as u ON c.user_id = u.id';
       let values = [];
       if (searchTerm) {
@@ -67,7 +92,7 @@ class Customer extends User {
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`]);
       }
       query += ' LIMIT ? OFFSET ?';
-      values.push(...[limit, offset]);
+      values.push(...[limit, offset * limit]);
 
       db.serialize(() => {
         db.all(query, values, (err, runResult) => {
@@ -83,7 +108,7 @@ class Customer extends User {
 
   static getById(id) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN systemUsers as u ON c.user_id = u.id WHERE id = ?';
+      const query = 'SELECT c.*, u.name AS name, u.role AS role FROM customers as c INNER JOIN systemUsers as u ON c.user_id = u.id WHERE c.id = ?';
 
       db.get(query, [id], (err, row) => {
         if (err) {

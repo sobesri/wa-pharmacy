@@ -67,7 +67,7 @@ class Medicine extends BaseModel {
         values.push(...[`%${searchTerm}%`, `%${searchTerm}%`]);
       }
       query += ' LIMIT ? OFFSET ?';
-      values.push(...[limit, offset]);
+      values.push(...[limit, offset * limit]);
 
       db.serialize(() => {
         db.all(query, values, (err, runResult) => {
