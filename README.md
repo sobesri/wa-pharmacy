@@ -20,3 +20,7 @@ In the postman to verify if the server is running successfully run 'localhost:50
 The following message should be displayed "Server is running on http://localhost:5000".
 
 You can change the port where the server is running by editing the .env file.
+
+System specifications:
+Node: v16.16.0
+Npm: 8.11.0
